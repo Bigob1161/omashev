@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Семейное древо</title>
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<section id="login" class="login" hidden>
+  <form id="login-form" class="login-card">
+    <img src="/static/icon.svg" alt="" class="login-mark" width="48" height="48">
+    <h1>Семейное древо</h1>
+    <p>Это закрытый сайт нашей семьи. Введите код, который вам прислали родственники.</p>
+    <label for="login-code">Семейный код</label>
+    <input id="login-code" type="password" autocomplete="current-password" required>
+    <button type="submit" class="btn primary">Войти</button>
+    <p id="login-error" class="error" role="alert" hidden></p>
+  </form>
+</section>
+
+<div id="main" class="main" hidden>
+  <header class="topbar">
+    <div class="brand"><img src="/static/icon.svg" alt="" width="26" height="26"><span>Семейное древо</span></div>
+    <div class="search">
+      <input id="search" type="search" placeholder="Найти родственника" autocomplete="off" aria-label="Найти родственника">
+      <ul id="search-results" class="search-results" hidden></ul>
+    </div>
+    <div class="top-actions">
+      <button id="btn-add" class="btn primary" type="button"><span class="wide-only">Добавить человека</span><span class="narrow-only">+ Человек</span></button>
+      <button id="btn-history" class="btn" type="button">История</button>
+      <button id="btn-who" class="btn ghost" type="button"></button>
+    </div>
+  </header>
+
+  <div id="viewport" class="viewport">
+    <div id="stage" class="stage">
+      <svg id="lines" class="lines" aria-hidden="true"></svg>
+      <div id="cards"></div>
+    </div>
+    <div id="empty" class="empty" hidden>
+      <h2>Древо пока пустое</h2>
+      <p>Начните с себя или со старшего родственника, которого помните. Потом добавляйте родителей, детей, мужей и жён — карточки сами выстроятся в древо.</p>
+      <button id="btn-empty-add" class="btn primary" type="button">Добавить первого человека</button>
+    </div>
+    <div class="zoom" aria-label="Масштаб">
+      <button id="zoom-in" type="button" aria-label="Приблизить">+</button>
+      <button id="zoom-out" type="button" aria-label="Отдалить">−</button>
+      <button id="zoom-fit" type="button" aria-label="Показать всё древо">Всё</button>
+    </div>
+  </div>
+
+  <aside id="panel" class="panel" hidden></aside>
+  <aside id="history" class="panel" hidden></aside>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div id="modal-card" class="modal-card" role="dialog" aria-modal="true"></div>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

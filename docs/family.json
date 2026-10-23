@@ -1,0 +1,230 @@
+{
+ "format": "nasl-family/1",
+ "exported_at": "2026-10-23T17:06:20Z",
+ "people": [
+  {
+   "id": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "last_name": "Омашева",
+   "first_name": "Бегойим",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "f",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T10:24:35Z",
+   "updated_at": "2026-10-23T16:35:08Z",
+   "notes": ""
+  },
+  {
+   "id": "22ef69fc8cc44029b7c44e60d480b968",
+   "last_name": "Омашева",
+   "first_name": "Саодатхон",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "f",
+   "birth_date": "01.12.1972",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:36:03Z",
+   "updated_at": "2026-10-23T16:36:03Z",
+   "notes": ""
+  },
+  {
+   "id": "701ef228b4254922b24862ec37328f07",
+   "last_name": "Тухтаназаров",
+   "first_name": "Ойбек",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "m",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:36:24Z",
+   "updated_at": "2026-10-23T16:36:24Z",
+   "notes": ""
+  },
+  {
+   "id": "11abab9c1ee048ce891944328109909c",
+   "last_name": "Тухтаназаров",
+   "first_name": "Мумин",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:36:38Z",
+   "updated_at": "2026-10-23T16:36:38Z",
+   "notes": ""
+  },
+  {
+   "id": "ae00f8cc4a3e499cafa0ffca4b35090e",
+   "last_name": "Омашева",
+   "first_name": "Бурмаш",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "f",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:36:51Z",
+   "updated_at": "2026-10-23T16:36:51Z",
+   "notes": ""
+  },
+  {
+   "id": "020a2a9448cd4c6e8dacdb3f1f82c06f",
+   "last_name": "Омашева",
+   "first_name": "Айнаш",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "f",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:37:05Z",
+   "updated_at": "2026-10-23T16:37:05Z",
+   "notes": ""
+  },
+  {
+   "id": "4219cd66cadd4726b6b88c8033300de8",
+   "last_name": "Омашева",
+   "first_name": "Солия",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:37:39Z",
+   "updated_at": "2026-10-23T16:37:39Z",
+   "notes": ""
+  },
+  {
+   "id": "9835169910e94d9e904a81bd3f2f6eeb",
+   "last_name": "Омашева",
+   "first_name": "Азза",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:38:02Z",
+   "updated_at": "2026-10-23T16:38:02Z",
+   "notes": ""
+  },
+  {
+   "id": "0f2c21d2ea0b475ea1c8cf62d7e3a817",
+   "last_name": "Каримов",
+   "first_name": "Оятилло",
+   "middle_name": "",
+   "maiden_name": "Тухтаназаров",
+   "gender": "m",
+   "birth_date": "22.02.2008",
+   "birth_place": "Андижан",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:38:46Z",
+   "updated_at": "2026-10-23T16:38:46Z",
+   "notes": ""
+  },
+  {
+   "id": "3ee60bc7a8c04faea6e4ca1d2bd9868d",
+   "last_name": "Каримов",
+   "first_name": "Жамолидин",
+   "middle_name": "",
+   "maiden_name": "",
+   "gender": "m",
+   "birth_date": "",
+   "birth_place": "",
+   "death_date": "",
+   "death_place": "",
+   "bio": "",
+   "created_at": "2026-10-23T16:39:07Z",
+   "updated_at": "2026-10-23T16:39:07Z",
+   "notes": ""
+  }
+ ],
+ "relations": [
+  {
+   "id": "f1989dc7b3bd475ba378851a85bf74ca",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "22ef69fc8cc44029b7c44e60d480b968",
+   "type": "parent"
+  },
+  {
+   "id": "9461041de8f54737a1650fdc6b6a4efb",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "701ef228b4254922b24862ec37328f07",
+   "type": "parent"
+  },
+  {
+   "id": "1a40932d1b814a2cbf3d389cfa6d2275",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "11abab9c1ee048ce891944328109909c",
+   "type": "parent"
+  },
+  {
+   "id": "8ec2ef2a5e0f442cbf09775dc68dfeed",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "ae00f8cc4a3e499cafa0ffca4b35090e",
+   "type": "parent"
+  },
+  {
+   "id": "87a594917b9f4bd5a111e179507626ad",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "020a2a9448cd4c6e8dacdb3f1f82c06f",
+   "type": "parent"
+  },
+  {
+   "id": "39ab706f1f714a6eb05bfe54dd604828",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "4219cd66cadd4726b6b88c8033300de8",
+   "type": "parent"
+  },
+  {
+   "id": "47da952b87f64217b25044ec37c92eba",
+   "a": "9bdb49fa22614479bfdf6c0ba58b8c5b",
+   "b": "9835169910e94d9e904a81bd3f2f6eeb",
+   "type": "parent"
+  },
+  {
+   "id": "6d5ef84405df41d28c0623728f1498c4",
+   "a": "22ef69fc8cc44029b7c44e60d480b968",
+   "b": "0f2c21d2ea0b475ea1c8cf62d7e3a817",
+   "type": "parent"
+  },
+  {
+   "id": "01611c55a7b7401a98ef55e7509b7d27",
+   "a": "3ee60bc7a8c04faea6e4ca1d2bd9868d",
+   "b": "22ef69fc8cc44029b7c44e60d480b968",
+   "type": "spouse"
+  },
+  {
+   "id": "6df1d696e2d8461694bd694494126dc6",
+   "a": "3ee60bc7a8c04faea6e4ca1d2bd9868d",
+   "b": "0f2c21d2ea0b475ea1c8cf62d7e3a817",
+   "type": "parent"
+  }
+ ],
+ "photos": [],
+ "memories": []
+}

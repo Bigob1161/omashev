@@ -1,0 +1,94 @@
+/* ---------- Страница «Моё древо» ---------- */
+.tree-page {
+  position: relative; height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column;
+  padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+  background: var(--bg); color: var(--text);
+  overflow: hidden;
+}
+.tree-page__bg { position: absolute; inset: 0; color: var(--gold); opacity: 0.6; pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000, transparent 85%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000, transparent 85%); }
+
+.tree-toolbar {
+  position: relative; z-index: 4;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 16px var(--gutter-r) 12px var(--gutter);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+}
+.tree-toolbar__title h1 { font-size: 34px; font-weight: 600; }
+.tree-toolbar__title { margin-right: auto; }
+.tree-toolbar .btn svg, .tree-toolbar .segmented svg { width: 16px; height: 16px; }
+.tree-search { position: relative; display: flex; align-items: center; width: min(300px, 100%); }
+.tree-search > svg { position: absolute; left: 12px; width: 18px; height: 18px; color: var(--text-muted); pointer-events: none; }
+.tree-search .input { padding-left: 40px; min-height: 42px; }
+.tree-search__results {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 10;
+  list-style: none; margin: 0; padding: 6px;
+  background: var(--bg-raised); border: 1px solid var(--gold-line); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-height: 320px; overflow-y: auto;
+}
+.tree-search__results li.small { padding: 8px 10px; }
+.tree-search__results button {
+  width: 100%; display: flex; justify-content: space-between; gap: 12px;
+  padding: 10px; border: 0; background: none; text-align: left; font-variant-numeric: tabular-nums;
+}
+.tree-search__results button:hover { background: rgba(214, 180, 106, 0.1); }
+
+.generation-bar {
+  position: relative; z-index: 3;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px var(--gutter-r) 10px var(--gutter);
+}
+.generation-bar__step { display: flex; margin-left: auto; }
+
+.tree-stage { position: relative; flex: 1; min-height: 0; }
+.tree-empty {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(480px, calc(100% - 32px));
+  display: flex; flex-direction: column; gap: 16px; align-items: flex-start;
+  padding: 36px; background: var(--bg-raised); border: 1px solid var(--gold-line);
+}
+.tree-empty h2 { font-size: 36px; }
+.tree-empty p { color: var(--text-muted); }
+.tree-hint {
+  position: absolute; left: var(--gutter); bottom: max(14px, env(safe-area-inset-bottom, 0px)); z-index: 2;
+  font-size: 12.5px; color: var(--text-muted); pointer-events: none;
+}
+
+.chart-viewport { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: grab; }
+.chart-viewport:focus-visible { outline: 2px solid var(--focus); outline-offset: -4px; }
+.chart-viewport.is-dragging { cursor: grabbing; user-select: none; }
+.chart-viewport.is-dragging .pcard { pointer-events: none; }
+.chart-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.chart-stage--glide { transition: transform 0.45s var(--ease-out); }
+.chart-lines { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.chart-line { fill: none; stroke: var(--gold); stroke-width: 1.4; opacity: 0.75; transition: opacity 0.4s; }
+.chart-line--spouse { stroke: var(--turquoise); stroke-width: 1; opacity: 0.9; }
+.chart-line.is-dim { opacity: 0.14; }
+.chart-star { fill: var(--bg); stroke: var(--turquoise); stroke-width: 1.2; transition: opacity 0.4s; }
+.chart-star.is-dim { opacity: 0.2; }
+
+.chart-controls {
+  position: absolute; right: var(--gutter-r); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 3;
+  display: flex; flex-direction: column; gap: 2px; padding: 4px;
+  background: var(--bg-raised); border: 1px solid var(--gold-line);
+}
+.chart-controls .icon-btn { border-radius: 2px; }
+
+.art-stage { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 45%, rgba(27, 125, 137, 0.2), transparent 70%), linear-gradient(180deg, #0a1322, #08101b); }
+.art-stage canvas { touch-action: none; }
+
+@media (max-width: 760px) {
+  .tree-toolbar__title h1 { font-size: 28px; }
+  .tree-search { order: 5; width: 100%; }
+  .tree-hint { display: none; }
+}
+
+.selection-bar {
+  position: relative; z-index: 3;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px var(--gutter-r) 0 var(--gutter);
+}
+.chart-line.is-hidden, .chart-star.is-hidden { opacity: 0; }

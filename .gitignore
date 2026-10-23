@@ -1,0 +1,13 @@
+# Личные данные семьи: база и фотографии — НЕ публикуются (публичный снимок лежит в docs/)
+family-tree/data/
+# Зависимости и сборки
+**/node_modules/
+family-tree/web/dist/
+family-tree/web/dist-static/
+**/__pycache__/
+*.tsbuildinfo
+# Локальные настройки
+.claude/
+.DS_Store
+# Копия навыка Claude — не относится к сайту
+react-three-fiber/

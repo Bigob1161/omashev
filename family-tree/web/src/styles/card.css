@@ -1,0 +1,113 @@
+/*
+  Карточка человека. Архивная бумага (или тёмно-синий материал в тёмной теме приложения),
+  портрет в арке, тонкая золотая окантовка, при наведении — подъём, тень и раскрытие подробностей.
+*/
+.pcard {
+  --pcard-bg: linear-gradient(170deg, #f8f1e1 0%, #ecdfc3 100%);
+  --pcard-fg: var(--ink);
+  --pcard-muted: var(--ink-muted);
+  --pcard-gold: #a37d36;
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; align-items: stretch;
+  width: 100%; padding: 18px 18px 22px;
+  background: var(--pcard-bg) ; color: var(--pcard-fg);
+  border: 1px solid color-mix(in srgb, var(--pcard-gold) 45%, transparent);
+  border-radius: 2px;
+  text-align: center; font: inherit;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 10px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), opacity 0.4s, filter 0.4s;
+}
+.pcard::before {
+  /* бумажное зерно */
+  content: ''; position: absolute; inset: 0; z-index: -1; background: var(--grain); opacity: 0.55; pointer-events: none;
+}
+.pcard::after {
+  /* внутренняя рамка-паспарту */
+  content: ''; position: absolute; inset: 6px; pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--pcard-gold) 22%, transparent);
+  transition: border-color 0.5s var(--ease-out);
+}
+button.pcard { cursor: pointer; }
+.pcard:hover, button.pcard:focus-visible {
+  transform: translateY(-6px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 26px 50px rgba(0, 0, 0, 0.3);
+}
+.pcard:hover::after { border-color: color-mix(in srgb, var(--pcard-gold) 60%, transparent); }
+.pcard:hover .arch-outline { stroke: #e8cb86; filter: drop-shadow(0 0 3px rgba(227, 196, 126, 0.6)); }
+
+.pcard__badge {
+  position: absolute; top: 12px; right: 12px; z-index: 1;
+  padding: 4px 8px; border: 1px solid currentColor;
+  font: 600 9.5px/1 var(--font-ui); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--pcard-gold, #a37d36); background: rgba(255, 255, 255, 0.4);
+}
+.memory-card .pcard__badge { color: #8c6a2b; }
+
+.pcard__portrait { display: block; width: 78%; margin: 4px auto 0; --gold: var(--pcard-gold); }
+.pcard__portrait svg { width: 100%; height: auto; display: block; overflow: visible; }
+.pcard__portrait .arch-outline { transition: stroke 0.5s, filter 0.5s; }
+
+.pcard__body { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 14px; min-width: 0; }
+.pcard__kin { font: 600 10px/1.2 var(--font-ui); letter-spacing: 0.2em; text-transform: uppercase; color: var(--pcard-gold); }
+.pcard__name { display: flex; flex-direction: column; font-family: var(--font-display); line-height: 1.05; min-width: 0; max-width: 100%; }
+.pcard__first { font-size: 27px; font-weight: 600; overflow-wrap: anywhere; }
+.pcard__last { font-size: 19px; font-weight: 500; font-style: italic; color: var(--pcard-muted); overflow-wrap: anywhere; }
+.pcard__years { font: 500 13px/1.3 var(--font-ui); letter-spacing: 0.08em; color: var(--pcard-muted); font-variant-numeric: tabular-nums; }
+.pcard__unknown { font-size: 12px; letter-spacing: 0.02em; opacity: 0.8; }
+/* Подробности раскрываются по высоте: сетка с одной строкой 0fr → 1fr */
+.pcard__more {
+  display: grid; grid-template-rows: 0fr; opacity: 0; width: 100%;
+  transition: grid-template-rows 0.55s var(--ease-out), opacity 0.45s var(--ease-out);
+}
+.pcard__more-inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+.pcard--archive:hover .pcard__more, .pcard--archive:focus-visible .pcard__more { grid-template-rows: 1fr; opacity: 1; }
+.pcard__rule { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--pcard-gold); margin: 6px 0 2px; }
+.pcard__rule::before, .pcard__rule::after { content: ''; width: 34px; height: 1px; background: currentColor; opacity: 0.5; }
+.pcard__place { font: 600 11px/1.4 var(--font-ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--pcard-gold); }
+.pcard__story { font: italic 500 16.5px/1.35 var(--font-display); color: var(--pcard-muted); margin-top: 4px; }
+
+/* На сенсорных экранах наведения нет — показываем подробности сразу */
+@media (hover: none) {
+  .pcard--archive .pcard__more { grid-template-rows: 1fr; opacity: 1; }
+}
+
+/* Тёмная тема приложения: глубокий синий материал */
+@media (prefers-color-scheme: dark) {
+  .theme-app .pcard {
+    --pcard-bg: linear-gradient(165deg, #1a2e4a 0%, #0f1d31 100%);
+    --pcard-fg: var(--cream);
+    --pcard-muted: var(--cream-muted);
+    --pcard-gold: #d6b46a;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+  .theme-app .pcard::before { opacity: 0.15; }
+  .theme-app .pcard__badge { background: rgba(0, 0, 0, 0.25); }
+}
+.names .pcard { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35); }
+
+/* Карточка на схеме */
+.pcard--chart { position: absolute; padding: 14px 14px 16px; }
+.pcard--chart .pcard__portrait { width: 72%; }
+.pcard--chart .pcard__first { font-size: 22px; }
+.pcard--chart .pcard__last { font-size: 16px; }
+.pcard--chart .pcard__body { margin-top: 10px; gap: 4px; }
+.pcard--chart .pcard__more { display: none; }
+.pcard--chart.pcard--compact .pcard__portrait { width: 86%; }
+.pcard--chart.pcard--compact .pcard__first { font-size: 30px; }
+.pcard--chart.pcard--compact .pcard__last { font-size: 22px; }
+.pcard--dim { opacity: 0.32; filter: saturate(0.4); }
+.pcard--dim:hover { opacity: 0.85; filter: none; }
+.pcard--family { box-shadow: 0 0 0 1px var(--pcard-gold), 0 14px 30px rgba(0, 0, 0, 0.3); }
+.pcard--selected {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px #36c6c0, 0 0 0 7px rgba(54, 198, 192, 0.18), 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+.pcard--hidden { opacity: 0; pointer-events: none; transform: scale(0.96); }
+
+/* На схеме при наведении карточка раскрывается: место рождения, родство и краткая история */
+.pcard--chart.pcard--more:not(.pcard--compact):hover,
+.pcard--chart.pcard--more:not(.pcard--compact):focus-visible {
+  z-index: 5; height: auto !important; min-height: 248px;
+}
+.pcard--chart.pcard--more:not(.pcard--compact):hover .pcard__more,
+.pcard--chart.pcard--more:not(.pcard--compact):focus-visible .pcard__more { display: grid; grid-template-rows: 1fr; opacity: 1; }
