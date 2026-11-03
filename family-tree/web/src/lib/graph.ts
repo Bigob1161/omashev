@@ -9,6 +9,8 @@ export interface FamilyGraph {
   spouses: Map<string, string[]>
   photos: Map<string, Photo[]>
   documents: Map<string, Photo[]>
+  /** Аудиорассказы «Голос поколений». */
+  audio: Map<string, Photo[]>
   memories: Map<string, Memory[]>
   allPhotos: Photo[]
   allMemories: Memory[]
@@ -29,6 +31,7 @@ export function buildGraph(data: TreeData): FamilyGraph {
     spouses: new Map(),
     photos: new Map(),
     documents: new Map(),
+    audio: new Map(),
     memories: new Map(),
     allPhotos: data.photos,
     allMemories: data.memories,
@@ -37,7 +40,7 @@ export function buildGraph(data: TreeData): FamilyGraph {
     if (r.type === 'parent') { push(g.parents, r.b, r.a); push(g.children, r.a, r.b) }
     else { push(g.spouses, r.a, r.b); push(g.spouses, r.b, r.a) }
   }
-  for (const p of data.photos) push(p.kind === 'document' ? g.documents : g.photos, p.person_id, p)
+  for (const p of data.photos) push(p.kind === 'document' ? g.documents : p.kind === 'audio' ? g.audio : g.photos, p.person_id, p)
   for (const m of data.memories) push(g.memories, m.person_id, m)
   return g
 }

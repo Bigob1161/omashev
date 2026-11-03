@@ -35,7 +35,8 @@ PORT = int(os.environ.get("PORT", "8000"))
 # иначе адрес посетителя можно подделать заголовком.
 TRUST_PROXY = os.environ.get("TRUST_PROXY") == "1"
 
-MAX_PHOTO_BYTES = 15 * 1024 * 1024
+# Фото и документы — до 15 МБ хватает; аудиорассказы «Голос поколений» бывают длиннее.
+MAX_PHOTO_BYTES = 40 * 1024 * 1024
 MAX_JSON_BYTES = 64 * 1024
 LOGIN_ATTEMPTS = 20
 LOGIN_WINDOW = 15 * 60
@@ -155,7 +156,11 @@ TABLES = {
 lock = threading.Lock()
 login_failures = {}
 
-IMAGE_TYPES = {"jpg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf"}
+IMAGE_TYPES = {
+    "jpg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf",
+    "mp3": "audio/mpeg", "m4a": "audio/mp4", "ogg": "audio/ogg", "wav": "audio/wav", "webm": "audio/webm",
+}
+AUDIO_EXT = {"mp3", "m4a", "ogg", "wav", "webm"}
 STATIC_TYPES = {
     ".html": "text/html; charset=utf-8",
     ".js": "text/javascript; charset=utf-8",
@@ -328,6 +333,17 @@ def detect_image(data):
         return "webp"
     if data[:5] == b"%PDF-":
         return "pdf"
+    # аудио для «Голоса поколений»
+    if data[:3] == b"ID3" or (len(data) > 1 and data[0] == 0xFF and (data[1] & 0xE0) == 0xE0):
+        return "mp3"
+    if data[4:8] == b"ftyp":
+        return "m4a"
+    if data[:4] == b"OggS":
+        return "ogg"
+    if data[:4] == b"RIFF" and data[8:12] == b"WAVE":
+        return "wav"
+    if data[:4] == b"\x1aE\xdf\xa3":
+        return "webm"
     return None
 
 
@@ -442,9 +458,9 @@ def api_add_photo(req, pid):
         raise ApiError(400, "Файл пустой", "empty_file")
     ext = detect_image(data)
     if not ext:
-        raise ApiError(415, "Это не похоже на фотографию или документ. Подойдут JPG, PNG, GIF, WebP или PDF.", "not_image")
+        raise ApiError(415, "Неподходящий формат. Подойдут фото JPG, PNG, WebP, документы PDF и аудио MP3, M4A, OGG, WAV.", "not_image")
     caption = unquote(req.headers.get("X-Caption", "")).strip()[:300]
-    kind = "document" if ext == "pdf" or req.headers.get("X-Kind") == "document" else "photo"
+    kind = "audio" if ext in AUDIO_EXT else "document" if ext == "pdf" or req.headers.get("X-Kind") == "document" else "photo"
     photo_id = new_id()
     file_name = f"{photo_id}.{ext}"
     with open(os.path.join(PHOTO_DIR, file_name), "wb") as f:
@@ -454,8 +470,8 @@ def api_add_photo(req, pid):
         (photo_id, pid, file_name, caption, kind, now()),
     )
     after = get_row("photos", photo_id)
-    what = "документ" if kind == "document" else "фото"
-    log(req.who, "create", "photos", photo_id, f"Добавлен {what}: {person_name(person)}", None, after)
+    what = {"document": "Добавлен документ", "audio": "Добавлен аудиорассказ"}.get(kind, "Добавлено фото")
+    log(req.who, "create", "photos", photo_id, f"{what}: {person_name(person)}", None, after)
     return after
 
 
@@ -647,7 +663,7 @@ ROUTES = [
     ("GET", r"/([\w-]+\.(?:svg|png|ico))", page_web_public, False, 0),
     ("GET", r"/robots\.txt", page_robots, False, 0),
     ("GET", r"/static/([\w.-]+)", page_static, False, 0),
-    ("GET", r"/photos/([0-9a-f]{32}\.(?:jpg|png|gif|webp|pdf))", page_photo, True, 0),
+    ("GET", r"/photos/([0-9a-f]{32}\.(?:jpg|png|gif|webp|pdf|mp3|m4a|ogg|wav|webm))", page_photo, True, 0),
     ("GET", r"/api/session", api_session, False, 0),
     ("POST", r"/api/login", api_login, False, MAX_JSON_BYTES),
     ("POST", r"/api/logout", api_logout, False, 0),
@@ -728,7 +744,7 @@ class Handler(BaseHTTPRequestHandler):
             return b""
         if length > limit:
             if limit == MAX_PHOTO_BYTES:
-                raise ApiError(413, "Фото слишком большое (больше 15 МБ)", "too_large")
+                raise ApiError(413, "Файл слишком большой (больше 40 МБ)", "too_large")
             raise ApiError(413, "Слишком большой запрос", "too_large")
         return self.rfile.read(length)
 

@@ -24,3 +24,4 @@ export const IconShare = () => <svg {...base}><circle cx="6" cy="12" r="2.4" /><
 export const IconTree = () => <svg {...base}><path d="M12 21v-7M12 14l-5-4M12 14l5-4M7 10V6M17 10V6M12 14V8" /><circle cx="7" cy="4.5" r="1.5" /><circle cx="17" cy="4.5" r="1.5" /><circle cx="12" cy="6.5" r="1.5" /></svg>
 export const IconCube = () => <svg {...base}><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" /><path d="M4 7.5l8 4.5 8-4.5M12 12v9" /></svg>
 export const IconUndo = () => <svg {...base}><path d="M9 7L4 12l5 5" /><path d="M4 12h10a6 6 0 010 12" transform="translate(0 -6)" /></svg>
+export const IconAlbum = () => <svg {...base}><path d="M4 5.5C7 4.5 9.5 4.5 12 6c2.5-1.5 5-1.5 8-.5v13c-3-1-5.5-1-8 .5-2.5-1.5-5-1.5-8-.5z" /><path d="M12 6v13.5" /></svg>

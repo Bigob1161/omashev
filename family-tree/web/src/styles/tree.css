@@ -92,3 +92,54 @@
   padding: 10px var(--gutter-r) 0 var(--gutter);
 }
 .chart-line.is-hidden, .chart-star.is-hidden { opacity: 0; }
+
+/* ---------- Родовое дерево (3D) ---------- */
+.tree-stage--art .art-stage { background: #120c08; }
+.tree3d-canvas { position: absolute !important; inset: 0; }
+.tree3d-tip {
+  display: flex; flex-direction: column; gap: 2px; min-width: 180px; max-width: 260px;
+  padding: 10px 14px; transform: translateY(-50%);
+  background: rgba(20, 13, 8, 0.92); border: 1px solid rgba(214, 180, 106, 0.55);
+  color: #f0e5cc; font: 500 12.5px/1.4 var(--font-ui); white-space: normal; text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+.tree3d-tip strong { font: 600 18px/1.15 var(--font-display); color: #f5ecd8; }
+.tree3d-tip em { font-style: normal; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+
+/* ---------- Семейный альбом по поколениям ---------- */
+.tree-stage--album { overflow-y: auto; }
+.album-view {
+  display: flex; flex-direction: column; gap: 36px;
+  padding: 18px var(--gutter-r) 60px var(--gutter);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(214, 180, 106, 0.08), transparent 70%);
+}
+.album-view__gen { display: flex; flex-direction: column; gap: 14px; }
+.album-view__head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.album-view__num { font: 600 34px/1 var(--font-display); color: var(--gold); min-width: 1.6em; }
+.album-view__head h2 { font-size: 24px; }
+.album-view__row { list-style: none; margin: 0; padding: 6px 2px 12px; display: flex; gap: 22px; overflow-x: auto; scroll-snap-type: x proximity; }
+.album-view__row > li { flex: none; scroll-snap-align: start; }
+.album-card {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; width: 170px;
+  padding: 12px 12px 14px; border: 0; border-radius: 3px; cursor: pointer;
+  background: linear-gradient(170deg, #efe3c6, #ddc9a1); color: #2a1d10;
+  box-shadow: 0 0 0 5px #3a2414, 0 0 0 6px rgba(214, 180, 106, 0.8), 0 14px 26px rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+.album-view__row > li:nth-child(odd) .album-card { transform: rotate(-0.6deg); }
+.album-card:hover, .album-card:focus-visible { transform: translateY(-4px) rotate(0deg); }
+.album-card.is-selected { box-shadow: 0 0 0 5px #4a2e18, 0 0 0 7px var(--turquoise), 0 18px 32px rgba(0, 0, 0, 0.4); }
+.album-card__frame {
+  position: relative; width: 100%; aspect-ratio: 0.8; overflow: hidden;
+  border-radius: 999px 999px 4px 4px / 60% 60% 4px 4px;
+  background: radial-gradient(ellipse at 50% 40%, #e9dcc0, #b9a27a);
+  box-shadow: inset 0 0 0 2px #b8955a, inset 0 0 22px rgba(60, 35, 10, 0.35);
+  display: grid; place-items: center;
+}
+.album-card__frame img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.25) contrast(1.03); }
+.album-card__initials { font: 500 46px/1 var(--font-display); color: #6b4c24; }
+.album-card__plate { display: flex; flex-direction: column; align-items: center; line-height: 1.15; font-family: var(--font-display); }
+.album-card__plate strong { font-size: 20px; font-weight: 600; }
+.album-card__plate span { font-size: 16px; font-style: italic; color: #6b5434; }
+.album-card__plate small { margin-top: 4px; font: 600 11.5px/1.2 var(--font-ui); color: #7a5a2c; font-variant-numeric: tabular-nums; }

@@ -11,18 +11,24 @@ import { childrenOf, parentsOf } from '../lib/graph'
 import { toast } from '../store/ui'
 import { TreeChart, type TreeChartHandle } from '../components/TreeChart'
 import { AddPersonDialog } from '../components/AddPersonDialog'
-import { IconChevronDown, IconChevronUp, IconCube, IconFit, IconMinus, IconPlus, IconSearch, IconTree } from '../components/Icons'
+import { IconAlbum, IconChevronDown, IconChevronUp, IconCube, IconFit, IconMinus, IconPlus, IconSearch, IconTree } from '../components/Icons'
 import { GirihPattern } from '../components/Ornament'
+import { FamilyAlbum } from '../components/FamilyAlbum'
 
-const ArtScene = lazy(() => import('../three/tea/TeaScenes').then((m) => ({ default: m.ArtScene })))
+const FamilyTree3D = lazy(() => import('../three/heritage/FamilyTree3D'))
 
-type Mode = 'practical' | 'art'
+type Mode = 'practical' | 'art' | 'album'
+const MODES: Mode[] = ['art', 'practical', 'album']
 
 export function TreePage() {
   const t = useT()
   const { graph, auth, loaded, selectedId, select, meId, requireAuth } = useFamily()
   const webgl = useMemo(() => hasWebGL(), [])
-  const [mode, setMode] = useState<Mode>(() => (storage.get('treeMode') === 'art' && webgl ? 'art' : 'practical'))
+  const [mode, setMode] = useState<Mode>(() => {
+    const saved = storage.get('treeMode') as Mode | null
+    if (saved === 'album' || saved === 'practical') return saved
+    return webgl ? 'art' : 'practical'
+  })
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [generation, setGeneration] = useState<number | null>(null)
@@ -88,8 +94,20 @@ export function TreePage() {
           <h1>{t.tree.title}</h1>
         </div>
         <div className="segmented" role="group" aria-label={t.tree.modeLabel}>
-          <button type="button" aria-pressed={mode === 'practical'} className={mode === 'practical' ? 'is-active' : ''} onClick={() => setMode('practical')}><IconTree />{t.tree.modePractical}</button>
-          <button type="button" aria-pressed={mode === 'art'} className={mode === 'art' ? 'is-active' : ''} onClick={() => setMode('art')} disabled={!webgl} title={webgl ? undefined : t.tree.noWebgl}><IconCube />{t.tree.modeArt}</button>
+          {MODES.map((m) => (
+            <button
+              key={m}
+              type="button"
+              aria-pressed={mode === m}
+              className={mode === m ? 'is-active' : ''}
+              onClick={() => setMode(m)}
+              disabled={m === 'art' && !webgl}
+              title={m === 'art' && !webgl ? t.tree.noWebgl : undefined}
+            >
+              {m === 'art' ? <IconCube /> : m === 'practical' ? <IconTree /> : <IconAlbum />}
+              {m === 'art' ? t.tree.modeArt : m === 'practical' ? t.tree.modePractical : t.tree.modeAlbum}
+            </button>
+          ))}
         </div>
         <div className="tree-search">
           <IconSearch />
@@ -149,7 +167,7 @@ export function TreePage() {
         </nav>
       )}
 
-      <section className="tree-stage" aria-label={mode === 'art' ? t.tree.modeArt : t.tree.modePractical}>
+      <section className={`tree-stage tree-stage--${mode}`} aria-label={mode === 'art' ? t.tree.modeArt : mode === 'album' ? t.tree.modeAlbum : t.tree.modePractical}>
         {empty ? (
           <div className="tree-empty">
             <h2>{t.tree.emptyTitle}</h2>
@@ -168,10 +186,12 @@ export function TreePage() {
             </div>
             <p className="tree-hint">{t.tree.keyboardHint}</p>
           </>
+        ) : mode === 'album' ? (
+          <FamilyAlbum graph={graph} selectedId={selectedId} onSelect={select} />
         ) : (
           <div className="art-stage">
             <Suspense fallback={<p className="tree-loading">{t.common.loading}</p>}>
-              <ArtScene graph={graph} onSelect={select} selectedId={selectedId} controlsRef={art} />
+              <FamilyTree3D graph={graph} onSelect={select} selectedId={current} controlsRef={art} />
             </Suspense>
             <p className="tree-hint">{t.tree.artHint}</p>
           </div>

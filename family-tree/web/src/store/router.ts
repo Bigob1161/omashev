@@ -1,11 +1,10 @@
 import { create } from 'zustand'
 
-export type Route = 'home' | 'tree' | 'archive' | 'about'
-const ROUTES: Route[] = ['home', 'tree', 'archive', 'about']
+export type Route = 'home' | 'history' | 'tree' | 'archive' | 'about'
+const ROUTES: Route[] = ['home', 'history', 'tree', 'archive', 'about']
 
 function parse(): Route {
-  let name = location.hash.replace(/^#\/?/, '').split('?')[0]
-  if (name === 'history') name = 'archive' // старая ссылка: история теперь вкладка архива
+  const name = location.hash.replace(/^#\/?/, '').split('?')[0]
   return (ROUTES as string[]).includes(name) ? (name as Route) : 'home'
 }
 
@@ -20,7 +19,7 @@ export const useRouter = create<RouterState>((set) => ({
     const hash = route === 'home' ? '#/' : `#/${route}`
     if (location.hash !== hash) location.hash = hash
     set({ route })
-    window.scrollTo({ top: 0 })
+    if (route !== 'history') window.scrollTo({ top: 0 })
   },
 }))
 
@@ -28,7 +27,7 @@ window.addEventListener('hashchange', () => {
   const route = parse()
   if (route !== useRouter.getState().route) {
     useRouter.setState({ route })
-    window.scrollTo({ top: 0 })
+    if (route !== 'history') window.scrollTo({ top: 0 })
   }
 })
 

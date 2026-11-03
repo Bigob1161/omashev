@@ -52,7 +52,7 @@ export interface Photo {
   person_id: string
   file: string
   caption: string
-  kind: 'photo' | 'document'
+  kind: 'photo' | 'document' | 'audio'
   created_at: string
 }
 

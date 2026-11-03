@@ -23,7 +23,7 @@ export function App() {
       <a className="skip-link" href="#main">{t.common.skipToContent}</a>
       <Nav />
       <Suspense fallback={<p className="page-loading">{t.common.loading}</p>}>
-        {route === 'home' && <HomePage />}
+        {(route === 'home' || route === 'history') && <HomePage />}
         {route === 'tree' && <TreePage />}
         {route === 'archive' && <ArchivePage />}
         {route === 'about' && <AboutPage />}

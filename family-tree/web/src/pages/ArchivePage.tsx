@@ -24,7 +24,7 @@ export function ArchivePage() {
 
   const items = useMemo<Item[]>(() => {
     const list: Item[] = [
-      ...graph.allPhotos.map((p) => ({
+      ...graph.allPhotos.filter((p) => p.kind !== 'audio').map((p) => ({
         id: p.id, kind: (p.kind === 'document' ? 'documents' : 'photos') as Filter, personId: p.person_id, at: p.created_at,
         url: fileUrl(p), text: p.caption, pdf: p.file.endsWith('.pdf'),
       })),

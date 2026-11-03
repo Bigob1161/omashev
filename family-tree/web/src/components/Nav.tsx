@@ -3,29 +3,18 @@ import { READ_ONLY } from '../lib/mode'
 import { LANGS, type Lang, useLang, useT } from '../i18n'
 import { type Route, hrefFor, useRouter } from '../store/router'
 import { useFamily } from '../store/family'
-import { useUi } from '../store/ui'
 import { IconClose, IconMenu, IconUser } from './Icons'
 import { ProfileDialog } from './Overlays'
+import { scrollToFrame } from '../pages/home/HistoricalJourney'
 
-/**
- * Знак Omashev: золотое кольцо «O» с бусинами, внутри — кобальтовая пиала,
- * из которой растёт ветвь с тремя бирюзовыми почками (чай → древо → поколения).
- */
+/** Знак NASL: стрельчатый портал-пештак, внутри — восьмиконечная звезда гириха и корень рода. */
 export function Logo() {
   return (
-    <svg className="logo-mark" width="36" height="36" viewBox="0 0 64 64" aria-hidden="true">
-      <circle cx="32" cy="32" r="27" fill="none" stroke="var(--gold)" strokeWidth="2.2" />
-      {Array.from({ length: 8 }, (_, i) => {
-        const a = (i / 8) * Math.PI * 2
-        return <circle key={i} cx={32 + Math.cos(a) * 27} cy={32 + Math.sin(a) * 27} r="1.9" fill="var(--gold)" />
-      })}
-      <path d="M19 41h26c-1.5 6.5-6.6 10-13 10s-11.5-3.5-13-10z" fill="#15216a" stroke="#f7f6f2" strokeWidth="1.4" />
-      <g fill="none" stroke="var(--gold-bright)" strokeWidth="2" strokeLinecap="round">
-        <path d="M32 41V25M32 33c-3.5-2-6-5-6.5-9M32 30c3-2 5.5-4.5 6-8.5" />
-      </g>
-      <g fill="var(--turquoise)">
-        <circle cx="25.5" cy="22.5" r="2.6" /><circle cx="32" cy="20" r="2.6" /><circle cx="38.5" cy="21" r="2.6" />
-      </g>
+    <svg className="logo-mark" width="34" height="34" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M10 58V28C10 16 20 8 32 4c12 4 22 12 22 24v30z" fill="none" stroke="var(--gold)" strokeWidth="2.4" />
+      <path d="M18 58V31c0-8 6-14 14-17 8 3 14 9 14 17v27" fill="#15307a" stroke="var(--gold-bright)" strokeWidth="1.4" />
+      <path d="M32 21l3 6 6.5-1-4 5 4 5-6.5-1-3 6-3-6-6.5 1 4-5-4-5 6.5 1z" fill="var(--turquoise)" />
+      <path d="M32 42v8M32 50l-6 7M32 50l6 7M32 47l-4 2M32 47l4 2" fill="none" stroke="var(--gold-bright)" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   )
 }
@@ -48,17 +37,18 @@ export function LangSwitch({ className = '' }: { className?: string }) {
   )
 }
 
-const LINKS: Route[] = ['home', 'tree', 'archive', 'about']
+const LINKS: Route[] = ['home', 'history', 'tree', 'archive']
 
 export function Nav() {
   const t = useT()
   const route = useRouter((s) => s.route)
   const go = useRouter((s) => s.go)
   const requireAuth = useFamily((s) => s.requireAuth)
+  const auth = useFamily((s) => s.auth)
   const [scrolled, setScrolled] = useState(false)
   const [menu, setMenu] = useState(false)
   const [profile, setProfile] = useState(false)
-  const labels: Record<Route, string> = { home: t.nav.home, tree: t.nav.tree, archive: t.nav.archive, about: t.nav.about }
+  const labels: Record<Route, string> = { home: t.nav.home, history: t.nav.history, tree: t.nav.tree, archive: t.nav.archive, about: t.nav.about }
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24)
@@ -74,8 +64,11 @@ export function Nav() {
     return () => document.removeEventListener('keydown', onKey)
   }, [menu])
 
-  const solid = scrolled || route !== 'home' || menu
-  const create = () => requireAuth(() => { useUi.getState().requestCreate(); go('tree') })
+  const solid = scrolled || (route !== 'home' && route !== 'history') || menu
+  const signedIn = READ_ONLY || auth === 'open'
+  const login = () => requireAuth(() => go('tree'))
+  // повторный клик по «Истории Узбекистана» снова ведёт к первой эпохе
+  const again = (r: Route) => { if (r === 'history' && route === 'history') scrollToFrame(1) }
 
   return (
     <header className={`nav${solid ? ' nav--solid' : ''}`}>
@@ -86,13 +79,14 @@ export function Nav() {
         </a>
         <nav className="nav__links" aria-label={t.nav.menu}>
           {LINKS.map((r) => (
-            <a key={r} href={hrefFor(r)} aria-current={route === r ? 'page' : undefined} className={route === r ? 'is-active' : ''}>{labels[r]}</a>
+            <a key={r} href={hrefFor(r)} aria-current={route === r ? 'page' : undefined} className={route === r ? 'is-active' : ''} onClick={() => again(r)}>{labels[r]}</a>
           ))}
         </nav>
         <div className="nav__actions">
           <LangSwitch className="nav__lang" />
-          <button className="icon-btn nav__profile" type="button" aria-label={t.nav.profile} onClick={() => setProfile(true)}><IconUser /></button>
-          {!READ_ONLY && <button className="btn btn--primary btn--small nav__create" type="button" onClick={create}>{t.nav.create}</button>}
+          {signedIn
+            ? <button className="icon-btn nav__profile" type="button" aria-label={t.nav.profile} onClick={() => setProfile(true)}><IconUser /></button>
+            : <button className="btn btn--primary btn--small nav__login" type="button" onClick={login}>{t.nav.login}</button>}
           <button className="icon-btn nav__burger" type="button" aria-label={t.nav.menu} aria-expanded={menu} aria-controls="mobile-menu" onClick={() => setMenu((m) => !m)}>
             {menu ? <IconClose /> : <IconMenu />}
           </button>
@@ -102,12 +96,12 @@ export function Nav() {
         <div className="mobile-menu" id="mobile-menu">
           <nav aria-label={t.nav.menu}>
             {LINKS.map((r) => (
-              <a key={r} href={hrefFor(r)} aria-current={route === r ? 'page' : undefined} onClick={() => setMenu(false)}>{labels[r]}</a>
+              <a key={r} href={hrefFor(r)} aria-current={route === r ? 'page' : undefined} onClick={() => { setMenu(false); again(r) }}>{labels[r]}</a>
             ))}
           </nav>
           <div className="mobile-menu__foot">
             <LangSwitch />
-            {!READ_ONLY && <button className="btn btn--primary" type="button" onClick={() => { setMenu(false); create() }}>{t.nav.create}</button>}
+            {!signedIn && <button className="btn btn--primary" type="button" onClick={() => { setMenu(false); login() }}>{t.nav.login}</button>}
           </div>
         </div>
       )}

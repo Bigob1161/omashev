@@ -111,3 +111,17 @@ button.pcard { cursor: pointer; }
 }
 .pcard--chart.pcard--more:not(.pcard--compact):hover .pcard__more,
 .pcard--chart.pcard--more:not(.pcard--compact):focus-visible .pcard__more { display: grid; grid-template-rows: 1fr; opacity: 1; }
+
+/* Карточки схемы — как фото в старом альбоме: тёмная деревянная рамка с золотым кантом */
+.pcard--chart, .theme-app .pcard--chart {
+  --pcard-bg: linear-gradient(170deg, #f3e8d0 0%, #e2d1ad 100%);
+  --pcard-fg: #2a1d10; --pcard-muted: #6b5434; --pcard-gold: #9a7432;
+  border: 0; border-radius: 3px;
+  box-shadow:
+    0 0 0 1px #d6b46a inset,
+    0 0 0 6px #3a2414, 0 0 0 7px rgba(214, 180, 106, 0.85),
+    0 14px 30px rgba(0, 0, 0, 0.4);
+}
+.pcard--chart:hover, button.pcard--chart:focus-visible, .theme-app .pcard--chart:hover {
+  box-shadow: 0 0 0 1px #e8cb86 inset, 0 0 0 6px #4a2e18, 0 0 0 7px #e8cb86, 0 28px 50px rgba(0, 0, 0, 0.45);
+}
