@@ -36,8 +36,8 @@ def snapshot():
         p.pop("deleted", None)
     relations = [dict(r) for r in db.execute("SELECT id, a, b, type FROM relations WHERE deleted=0 ORDER BY created_at")
                  if r["a"] in alive and r["b"] in alive]
-    photos = [dict(r) for r in db.execute("SELECT id, person_id, file, caption, kind, created_at FROM photos WHERE deleted=0 ORDER BY created_at")
-              if r["person_id"] in alive]
+    photos = [{k: r[k] for k in r.keys() if k != "deleted"}
+              for r in db.execute("SELECT * FROM photos WHERE deleted=0 ORDER BY created_at") if r["person_id"] in alive]
     memories = [dict(r) for r in db.execute("SELECT id, person_id, text, author, created_at FROM memories WHERE deleted=0 ORDER BY created_at")
                 if r["person_id"] in alive]
     return {"format": "nasl-family/1", "exported_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

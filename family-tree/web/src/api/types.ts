@@ -53,6 +53,8 @@ export interface Photo {
   file: string
   caption: string
   kind: 'photo' | 'document' | 'audio'
+  /** Кто добавил (имя из «Кто вы»); у старых записей может отсутствовать. */
+  author?: string
   created_at: string
 }
 

@@ -16,6 +16,7 @@ import { AddPersonDialog, type AddMode } from './AddPersonDialog'
 import { IconCamera, IconClose, IconDocument, IconEdit, IconTrash } from './Icons'
 import { Modal } from './Modal'
 import { ArchPortrait, OrnamentRule } from './Ornament'
+import { AudioMemories } from './AudioMemories'
 
 /** Подробная карточка человека — выезжающая справа панель. */
 export function PersonPanel() {
@@ -124,114 +125,140 @@ export function PersonPanel() {
       <div className="panel-scrim" onClick={() => select(null)} aria-hidden="true" />
       <aside ref={panel} className="person-panel theme-app" aria-label={name} tabIndex={-1}>
         <div className="person-panel__bar">
-          {(kin || generation) && <span className="person-panel__kin">{kin ?? generation}</span>}
+          <span className="person-panel__kin">{t.person.archiveSheet}</span>
           <button className="icon-btn" type="button" onClick={() => select(null)} aria-label={t.common.close}><IconClose /></button>
         </div>
 
-        <header className="person-hero">
-          <button type="button" className="person-hero__portrait" onClick={() => portrait && setLightbox(portrait)} disabled={!portrait} aria-label={portrait ? t.person.openPhoto : undefined}>
-            <ArchPortrait src={portrait ? fileUrl(portrait) : undefined} alt={fmt(t.person.portraitOf, { name })} initials={initials(person)} />
-          </button>
-          <h2 className="person-hero__name">
-            <span>{person.first_name || t.common.noName}{person.middle_name ? ` ${person.middle_name}` : ''}</span>
-            {person.last_name && <span className="person-hero__last">{person.last_name}</span>}
-          </h2>
-          {person.maiden_name && <p className="person-hero__maiden">{fmt(t.person.maidenName, { name: person.maiden_name })}</p>}
-          <p className="person-hero__years">{lifeYears(person, t) || t.common.yearsUnknown}</p>
-        </header>
+        <div className="archive-sheet">
+          {/* Слева — портрет в рамке и годы жизни */}
+          <div className="archive-sheet__left">
+            <button type="button" className="archive-frame" onClick={() => portrait && setLightbox(portrait)} disabled={!portrait} aria-label={portrait ? t.person.openPhoto : undefined}>
+              <span className="archive-frame__inner">
+                {portrait
+                  ? <img src={fileUrl(portrait)} alt={fmt(t.person.portraitOf, { name })} />
+                  : <span className="archive-frame__initials" aria-hidden="true">{initials(person)}</span>}
+              </span>
+            </button>
+            <p className="archive-sheet__years">{lifeYears(person, t) || t.common.yearsUnknown}</p>
+            {(kin || generation) && <p className="archive-sheet__kin">{[kin, generation].filter(Boolean).join(' · ')}</p>}
+            <div className="panel-actions">
+              {!READ_ONLY && <button className="btn btn--small" type="button" onClick={() => setEditing(true)}><IconEdit />{t.person.editTitle}</button>}
+              {!READ_ONLY && <label className="btn btn--small upload-btn">
+                <IconCamera />{t.person.addPhoto}
+                <input type="file" accept="image/*" multiple className="visually-hidden" onChange={(e) => { upload(e.target.files, 'photo'); e.target.value = '' }} />
+              </label>}
+              {useRouter.getState().route !== 'tree' && (
+                <button className="btn btn--small" type="button" onClick={() => { useRouter.getState().go('tree'); select(person.id) }}>{t.person.showOnTree}</button>
+              )}
+            </div>
+          </div>
 
-        <dl className="facts">
-          <div><dt>{t.person.birth}</dt><dd>{person.birth_date || <span className="muted">{t.common.dateUnknown}</span>}</dd></div>
-          <div><dt>{t.person.birthPlace}</dt><dd>{person.birth_place || <span className="muted">{t.common.placeUnknown}</span>}</dd></div>
-          {(person.death_date || person.death_place) && (
-            <>
-              <div><dt>{t.person.death}</dt><dd>{person.death_date || <span className="muted">{t.common.dateUnknown}</span>}</dd></div>
-              <div><dt>{t.person.deathPlace}</dt><dd>{person.death_place || <span className="muted">{t.common.placeUnknown}</span>}</dd></div>
-            </>
-          )}
-        </dl>
+          {/* Справа — имя, даты, места, биография, истории */}
+          <div className="archive-sheet__right">
+            <h2 className="person-hero__name">
+              <span>{person.first_name || t.common.noName}{person.middle_name ? ` ${person.middle_name}` : ''}</span>
+              {person.last_name && <span className="person-hero__last">{person.last_name}</span>}
+            </h2>
+            {person.maiden_name && <p className="person-hero__maiden">{fmt(t.person.maidenName, { name: person.maiden_name })}</p>}
 
-        <div className="panel-actions">
-          {!READ_ONLY && <button className="btn btn--small" type="button" onClick={() => setEditing(true)}><IconEdit />{t.person.editTitle}</button>}
-          {useRouter.getState().route !== 'tree' && (
-            <button className="btn btn--small" type="button" onClick={() => { useRouter.getState().go('tree'); select(person.id) }}>{t.person.showOnTree}</button>
-          )}
+            <dl className="facts">
+              <div><dt>{t.person.birth}</dt><dd>{person.birth_date || <span className="muted">{t.common.dateUnknown}</span>}</dd></div>
+              <div><dt>{t.person.birthPlace}</dt><dd>{person.birth_place || <span className="muted">{t.common.placeUnknown}</span>}</dd></div>
+              {(person.death_date || person.death_place) && (
+                <>
+                  <div><dt>{t.person.death}</dt><dd>{person.death_date || <span className="muted">{t.common.dateUnknown}</span>}</dd></div>
+                  <div><dt>{t.person.deathPlace}</dt><dd>{person.death_place || <span className="muted">{t.common.placeUnknown}</span>}</dd></div>
+                </>
+              )}
+            </dl>
+
+            <section className="panel-section">
+              <h3>{t.person.about}</h3>
+              {person.bio ? <p className="bio">{person.bio}</p> : <p className="muted">{t.person.noBio}</p>}
+              {person.notes && (
+                <div className="notes">
+                  <h4 className="field-label">{t.person.notes}</h4>
+                  <p>{person.notes}</p>
+                </div>
+              )}
+            </section>
+
+            <section className="panel-section">
+              <h3>{t.person.memories}</h3>
+              <Memories personId={person.id} />
+            </section>
+
+            <section className="panel-section voice">
+              <h3>{t.person.voice}</h3>
+              <p className="muted small">{t.person.voiceHint}</p>
+              <AudioMemories personId={person.id} />
+            </section>
+          </div>
         </div>
 
-        <section className="panel-section">
-          <h3>{t.person.about}</h3>
-          {person.bio ? <p className="bio">{person.bio}</p> : <p className="muted">{t.person.noBio}</p>}
-          {person.notes && (
-            <div className="notes">
-              <h4 className="field-label">{t.person.notes}</h4>
-              <p>{person.notes}</p>
-            </div>
-          )}
-        </section>
-
         <OrnamentRule />
 
-        <section className="panel-section">
-          <h3>{t.person.relatives}</h3>
-          {group(t.person.parents, parentsOf(graph, person.id), { type: 'parent', parentFirst: true })}
-          {group(spouseTitle, spousesOf(graph, person.id), { type: 'spouse', parentFirst: false })}
-          {group(t.person.children, childrenOf(graph, person.id), { type: 'parent', parentFirst: false })}
-          {group(t.person.siblings, siblingsOf(graph, person.id))}
-          {!READ_ONLY && <div className="add-relative">
-            <span className="field-label">{t.person.addRelative}</span>
-            <div className="add-relative__buttons">
-              <button className="btn btn--small" type="button" disabled={parentsOf(graph, person.id).length >= 2} onClick={() => setAdding('parent')}>{t.person.addParent}</button>
-              <button className="btn btn--small" type="button" onClick={() => setAdding('spouse')}>{t.person.addSpouse}</button>
-              <button className="btn btn--small" type="button" onClick={() => setAdding('child')}>{t.person.addChild}</button>
-              <button className="btn btn--small" type="button" onClick={() => parentsOf(graph, person.id).length ? setAdding('sibling') : toast(t.person.siblingNeedsParent)}>{t.person.addSibling}</button>
+        {/* Ниже — родные, фотографии, документы */}
+        <div className="archive-sheet__below">
+          <section className="panel-section">
+            <h3>{t.person.relatives}</h3>
+            <div className="rel-grid">
+              {group(t.person.parents, parentsOf(graph, person.id), { type: 'parent', parentFirst: true })}
+              {group(spouseTitle, spousesOf(graph, person.id), { type: 'spouse', parentFirst: false })}
+              {group(t.person.children, childrenOf(graph, person.id), { type: 'parent', parentFirst: false })}
+              {group(t.person.siblings, siblingsOf(graph, person.id))}
             </div>
+            {!READ_ONLY && <div className="add-relative">
+              <span className="field-label">{t.person.addRelative}</span>
+              <div className="add-relative__buttons">
+                <button className="btn btn--small" type="button" disabled={parentsOf(graph, person.id).length >= 2} onClick={() => setAdding('parent')}>{t.person.addParent}</button>
+                <button className="btn btn--small" type="button" onClick={() => setAdding('spouse')}>{t.person.addSpouse}</button>
+                <button className="btn btn--small" type="button" onClick={() => setAdding('child')}>{t.person.addChild}</button>
+                <button className="btn btn--small" type="button" onClick={() => parentsOf(graph, person.id).length ? setAdding('sibling') : toast(t.person.siblingNeedsParent)}>{t.person.addSibling}</button>
+              </div>
+            </div>}
+          </section>
+
+          <div className="archive-sheet__media">
+            <section className="panel-section">
+              <div className="panel-section__head">
+                <h3>{t.person.photos}</h3>
+                {!READ_ONLY && <label className="btn btn--small upload-btn">
+                  <IconCamera />{t.person.addPhoto}
+                  <input type="file" accept="image/*" multiple className="visually-hidden" onChange={(e) => { upload(e.target.files, 'photo'); e.target.value = '' }} />
+                </label>}
+              </div>
+              {photos.length ? (
+                <div className="gallery">
+                  {photos.map((ph) => (
+                    <button key={ph.id} type="button" className="gallery__item" onClick={() => setLightbox(ph)} aria-label={ph.caption || t.person.openPhoto}>
+                      <img src={fileUrl(ph)} alt="" loading="lazy" width="160" height="160" />
+                    </button>
+                  ))}
+                </div>
+              ) : <p className="muted">{t.person.noPhotos}</p>}
+            </section>
+
+            <section className="panel-section">
+              <div className="panel-section__head">
+                <h3>{t.person.documents}</h3>
+                {!READ_ONLY && <label className="btn btn--small upload-btn">
+                  <IconDocument />{t.person.addDocument}
+                  <input type="file" accept="image/*,application/pdf" multiple className="visually-hidden" onChange={(e) => { upload(e.target.files, 'document'); e.target.value = '' }} />
+                </label>}
+              </div>
+              {documents.length ? (
+                <ul className="doc-list">
+                  {documents.map((d) => <DocumentRow key={d.id} doc={d} onOpen={() => (d.file.endsWith('.pdf') ? window.open(fileUrl(d), '_blank', 'noopener') : setLightbox(d))} />)}
+                </ul>
+              ) : <p className="muted">{t.person.noDocuments}</p>}
+            </section>
+          </div>
+
+          {!READ_ONLY && <div className="panel-danger">
+            <button className="btn btn--small btn--danger" type="button" onClick={deletePerson}><IconTrash />{t.person.deletePerson}</button>
           </div>}
-        </section>
-
-        <OrnamentRule />
-
-        <section className="panel-section">
-          <div className="panel-section__head">
-            <h3>{t.person.photos}</h3>
-            {!READ_ONLY && <label className="btn btn--small upload-btn">
-              <IconCamera />{t.person.addPhoto}
-              <input type="file" accept="image/*" multiple className="visually-hidden" onChange={(e) => { upload(e.target.files, 'photo'); e.target.value = '' }} />
-            </label>}
-          </div>
-          {photos.length ? (
-            <div className="gallery">
-              {photos.map((ph) => (
-                <button key={ph.id} type="button" className="gallery__item" onClick={() => setLightbox(ph)} aria-label={ph.caption || t.person.openPhoto}>
-                  <img src={fileUrl(ph)} alt="" loading="lazy" width="160" height="160" />
-                </button>
-              ))}
-            </div>
-          ) : <p className="muted">{t.person.noPhotos}</p>}
-        </section>
-
-        <section className="panel-section">
-          <div className="panel-section__head">
-            <h3>{t.person.documents}</h3>
-            {!READ_ONLY && <label className="btn btn--small upload-btn">
-              <IconDocument />{t.person.addDocument}
-              <input type="file" accept="image/*,application/pdf" multiple className="visually-hidden" onChange={(e) => { upload(e.target.files, 'document'); e.target.value = '' }} />
-            </label>}
-          </div>
-          {documents.length ? (
-            <ul className="doc-list">
-              {documents.map((d) => <DocumentRow key={d.id} doc={d} onOpen={() => (d.file.endsWith('.pdf') ? window.open(fileUrl(d), '_blank', 'noopener') : setLightbox(d))} />)}
-            </ul>
-          ) : <p className="muted">{t.person.noDocuments}</p>}
-        </section>
-
-        <section className="panel-section">
-          <h3>{t.person.memories}</h3>
-          <Memories personId={person.id} />
-        </section>
-
-        {!READ_ONLY && <div className="panel-danger">
-          <button className="btn btn--small btn--danger" type="button" onClick={deletePerson}><IconTrash />{t.person.deletePerson}</button>
-        </div>}
+        </div>
       </aside>
 
       {adding && <AddPersonDialog mode={adding} person={person} onClose={() => setAdding(null)} />}

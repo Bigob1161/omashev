@@ -148,6 +148,9 @@ if "notes" not in {r["name"] for r in db.execute("PRAGMA table_info(people)")}:
 if "kind" not in {r["name"] for r in db.execute("PRAGMA table_info(photos)")}:
     # photo — фотография, document — скан или PDF семейного документа
     db.execute("ALTER TABLE photos ADD COLUMN kind TEXT NOT NULL DEFAULT 'photo'")
+if "author" not in {r["name"] for r in db.execute("PRAGMA table_info(photos)")}:
+    # кто добавил файл — для аудиорассказов «Голос поколений»
+    db.execute("ALTER TABLE photos ADD COLUMN author TEXT NOT NULL DEFAULT ''")
 db.commit()
 TABLES = {
     t: {row["name"] for row in db.execute(f"PRAGMA table_info({t})")}
@@ -387,7 +390,7 @@ def api_tree(req):
     photos = [
         dict(r)
         for r in db.execute(
-            "SELECT id, person_id, file, caption, kind, created_at FROM photos WHERE deleted=0 ORDER BY created_at"
+            "SELECT id, person_id, file, caption, kind, author, created_at FROM photos WHERE deleted=0 ORDER BY created_at"
         )
         if r["person_id"] in alive
     ]
@@ -466,8 +469,8 @@ def api_add_photo(req, pid):
     with open(os.path.join(PHOTO_DIR, file_name), "wb") as f:
         f.write(data)
     db.execute(
-        "INSERT INTO photos (id, person_id, file, caption, kind, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-        (photo_id, pid, file_name, caption, kind, now()),
+        "INSERT INTO photos (id, person_id, file, caption, kind, author, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (photo_id, pid, file_name, caption, kind, req.who, now()),
     )
     after = get_row("photos", photo_id)
     what = {"document": "Добавлен документ", "audio": "Добавлен аудиорассказ"}.get(kind, "Добавлено фото")
@@ -791,7 +794,22 @@ class Handler(BaseHTTPRequestHandler):
     def send_file(self, path, ctype, cache):
         with open(path, "rb") as f:
             data = f.read()
-        self.send_bytes(200, data, ctype, [("Cache-Control", cache)])
+        extra = [("Cache-Control", cache), ("Accept-Ranges", "bytes")]
+        # Запрос части файла (Range) — без него Safari не проигрывает аудио.
+        m = re.fullmatch(r"bytes=(\d*)-(\d*)", self.headers.get("Range", "").strip())
+        if m and (m.group(1) or m.group(2)):
+            size = len(data)
+            if m.group(1):
+                start = int(m.group(1))
+                end = min(size - 1, int(m.group(2))) if m.group(2) else size - 1
+            else:
+                start, end = max(0, size - int(m.group(2))), size - 1
+            if start >= size or start > end:
+                self.send_bytes(416, b"", ctype, [("Content-Range", f"bytes */{size}")])
+                return
+            self.send_bytes(206, data[start:end + 1], ctype, [*extra, ("Content-Range", f"bytes {start}-{end}/{size}")])
+            return
+        self.send_bytes(200, data, ctype, extra)
 
     def send_bytes(self, status, data, ctype, extra=()):
         self.send_response(status)
